@@ -109,6 +109,7 @@ class TNECoupledModel(Model):
             preposition_labels: torch.IntTensor = None,
     ) -> Dict[str, torch.Tensor]:
 
+
         """
         # Parameters
 

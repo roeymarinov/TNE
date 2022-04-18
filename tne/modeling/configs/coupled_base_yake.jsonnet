@@ -91,9 +91,9 @@ local context = "doc";
     },
     "prepositions": preposition_list,
     "span_extractor": {
-        "method" = method,
-        "context" = context
-    }
+        "method" : method,
+        "context" : context
+    },
     "freeze": false,
   },
   "data_loader": {

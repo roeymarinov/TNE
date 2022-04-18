@@ -49,6 +49,7 @@ class YakeSpanExtractor(SpanExtractor):
 
         metadata = metadata[0]
         text = metadata['original_text']
+
         tokens = metadata['tokens']
         context = self.context
         batch_size = sequence_tensor.shape[0]
@@ -59,7 +60,7 @@ class YakeSpanExtractor(SpanExtractor):
         span_embeddings = torch.empty((batch_size, num_spans, embedding_size))
 
         if context == "doc":
-            yake_kw_extractor = yake.KeywordExtractor(n=1, top=doc_length, features=None)
+            yake_kw_extractor = yake.KeywordExtractor(n=1, top=doc_length, features=None, stopwords=set())
 
             # returns list of tuples (word(str), score(float)) by ascending score order
             scores = yake_kw_extractor.extract_keywords(text)
@@ -86,7 +87,7 @@ class YakeSpanExtractor(SpanExtractor):
                     np_tokens = tokens[first:last + 1]
                     length = len(np_tokens)
                     noun_phrase = " ".join(np_tokens)
-                    yake_kw_extractor = yake.KeywordExtractor(n=1, top=length, features=None)
+                    yake_kw_extractor = yake.KeywordExtractor(n=1, top=length, features=None, stopwords=set())
                     scores = yake_kw_extractor.extract_keywords(noun_phrase)
                     word_embeds = sequence_tensor[i][first:last + 1]
                     np_embedding = self.get_np_embedding(scores, np_tokens, word_embeds)
@@ -100,12 +101,12 @@ class YakeSpanExtractor(SpanExtractor):
         scores_dict = dict(scores)
         method = self.method
 
+
         if method == "wa":
             # with softmax:
-            weights = torch.Tensor([scores_dict[word] for word in np_tokens])
+            weights = torch.Tensor([scores_dict.get(word, 0.0) for word in np_tokens])
             softmax = torch.nn.Softmax()
             weights = softmax(weights)
-
             # without softmax:
             # weights = np.array([1 - scores[word] for word in np_tokens])
             # ones = np.ones_like(weights)
@@ -118,7 +119,7 @@ class YakeSpanExtractor(SpanExtractor):
             np_embedding = torch.zeros_like(word_embeds[0])
             for i in range(len(word_embeds)):
                 np_embedding += weights[i]*word_embeds[i]
-
+            print(torch.any(torch.isnan(np_embedding)))
             return np_embedding
 
         elif method == "average":

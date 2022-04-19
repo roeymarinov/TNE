@@ -134,9 +134,8 @@ class TNECoupledYakeModel(Model):
                 span_embeddings = self.get_span_embeddings(text, spans, metadata)
         else:
             span_embeddings = self.get_span_embeddings(text, spans, metadata)
-        #print(type(span_embeddings))
         span_embeddings = torch.Tensor(span_embeddings).cuda()
-        #print(span_embeddings)
+
         anchor_reps = self._anchor_feedforward(span_embeddings)
         complement_reps = self._complement_feedforward(span_embeddings)
 
@@ -157,6 +156,8 @@ class TNECoupledYakeModel(Model):
         }
         if preposition_labels is not None:
             preposition_labels = preposition_labels.reshape(-1)
+
+            preposition_labels
             preposition_loss = self.preposition_loss(preposition_scores, preposition_labels)
 
             output_dict["loss"] = preposition_loss
@@ -211,6 +212,8 @@ class TNECoupledYakeModel(Model):
 
         # Shape: (batch_size, document_length, encoding_dim)
         contextualized_embeddings = self._context_layer(text_embeddings, text_mask)
+
+
         # Shape: (batch_size, num_spans, 2 * encoding_dim)
         span_embeddings = self._span_extractor(contextualized_embeddings, spans, metadata)
 

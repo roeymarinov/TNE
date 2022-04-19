@@ -71,8 +71,8 @@ class YakeSpanExtractor(SpanExtractor):
                     np_tokens = tokens[first:last + 1]
                     word_embeds = sequence_tensor[i][first:last + 1]
                     np_embedding = self.get_np_embedding(scores, np_tokens, word_embeds)
-
                     span_embeddings[i][j] = np_embedding
+
 
         elif context == "np":
             for i in range(batch_size):
@@ -114,13 +114,13 @@ class YakeSpanExtractor(SpanExtractor):
             # so the average is over the rows
             np_embedding = torch.zeros_like(word_embeds[0])
             for i in range(len(word_embeds)):
-                np_embedding += weights[i]*word_embeds[i]
+                np_embedding += weights[i] * word_embeds[i]
             return np_embedding
 
         elif method == "wa_top_half":
             length = len(np_tokens)
             np_scores = [(word, scores_dict.get(word, 0.0)) for word in np_tokens]
-            top_half_scores = np_scores.sort(key=lambda x: x[1])[:length//2 + 1]
+            top_half_scores = sorted(np_scores, key=lambda x: x[1])[:length // 2 + 1]
             top_half_words = [tup[0] for tup in top_half_scores]
             top_half_words_indices = [np_tokens.index(word) for word in top_half_words]
             top_half_word_embeddings = [word_embeds[i] for i in top_half_words_indices]
@@ -148,8 +148,9 @@ class YakeSpanExtractor(SpanExtractor):
             return np_embedding
 
         elif method == "max":
-            word = scores[0][0]
-            index = np_tokens.index(word)
+            np_scores = [(word, scores_dict.get(word, 0.0)) for word in np_tokens]
+            top = sorted(np_scores, key=lambda x: x[1])[0]
+            index = np_tokens.index(top[0])
             np_embedding = word_embeds[index]
             return np_embedding
 

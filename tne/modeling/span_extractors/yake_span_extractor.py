@@ -1,6 +1,3 @@
-from typing import List
-
-import numpy as np
 import torch
 from allennlp.modules.span_extractors import SpanExtractor
 import yake
@@ -67,7 +64,7 @@ class YakeSpanExtractor(SpanExtractor):
 
             for i in range(batch_size):
                 spans = span_indices[i]
-                for j in range(batch_size):
+                for j in range(num_spans):
                     span = spans[j]
                     first = span[0]
                     last = span[1]
@@ -101,7 +98,6 @@ class YakeSpanExtractor(SpanExtractor):
         scores_dict = dict(scores)
         method = self.method
 
-
         if method == "wa":
             # with softmax:
             weights = torch.Tensor([scores_dict.get(word, 0.0) for word in np_tokens])
@@ -119,11 +115,10 @@ class YakeSpanExtractor(SpanExtractor):
             np_embedding = torch.zeros_like(word_embeds[0])
             for i in range(len(word_embeds)):
                 np_embedding += weights[i]*word_embeds[i]
-            print(torch.any(torch.isnan(np_embedding)))
             return np_embedding
 
         elif method == "average":
-            np_embedding = np.average(word_embeds, axis=0)
+            np_embedding = torch.mean(word_embeds, 0)
             return np_embedding
 
         elif method == "max":
@@ -133,17 +128,18 @@ class YakeSpanExtractor(SpanExtractor):
             return np_embedding
 
         elif method == "wa_first_last":
-            weights = np.array(
-                [scores_dict[np_tokens[0]], scores_dict[np_tokens[-1]]])
+            weights = torch.Tensor([scores_dict.get(np_tokens[0], 0.0), scores_dict.get(np_tokens[-1], 0.0)])
             softmax = torch.nn.Softmax()
             weights = softmax(weights)
-            first_last_embeds = np.array([word_embeds[0], word_embeds[-1]])
-            np_embedding = np.average(first_last_embeds, axis=0, weights=weights)
+            # first_last_embeds = np.array([word_embeds[0], word_embeds[-1]])
+            # np_embedding = np.average(first_last_embeds, axis=0, weights=weights)
+            np_embedding = word_embeds[0] * weights[0] + word_embeds[-1] * weights[-1]
             return np_embedding
 
         elif method == "average_first_last":
-            first_last_embeds = np.array([word_embeds[0], word_embeds[-1]])
-            np_embedding = np.average(first_last_embeds, axis=0)
+            # first_last_embeds = np.array([word_embeds[0], word_embeds[-1]])
+            # np_embedding = np.average(first_last_embeds, axis=0)
+            np_embedding = word_embeds[0] * 0.5 + word_embeds[-1] * 0.5
             return np_embedding
 
         else:

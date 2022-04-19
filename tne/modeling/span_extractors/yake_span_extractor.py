@@ -117,6 +117,32 @@ class YakeSpanExtractor(SpanExtractor):
                 np_embedding += weights[i]*word_embeds[i]
             return np_embedding
 
+        elif method == "wa_top_half":
+            length = len(np_tokens)
+            np_scores = [(word, scores_dict.get(word, 0.0)) for word in np_tokens]
+            top_half_scores = np_scores.sort(key=lambda x: x[1])[:length//2 + 1]
+            top_half_words = [tup[0] for tup in top_half_scores]
+            top_half_words_indices = [np_tokens.index(word) for word in top_half_words]
+            top_half_word_embeddings = [word_embeds[i] for i in top_half_words_indices]
+            top_half_scores_dict = dict(top_half_scores)
+            weights = torch.Tensor([top_half_scores_dict.get(word, 0.0) for word in top_half_words])
+
+            softmax = torch.nn.Softmax()
+            weights = softmax(weights)
+            # without softmax:
+            # weights = np.array([1 - scores[word] for word in np_tokens])
+            # ones = np.ones_like(weights)
+            # zeros = np.zeros_like(weights)
+            # weights = np.maximum(zeros, weights)
+            # weights = np.minimum(ones, weights)
+
+            # I assumed that word_embeds is a matrix where each row is one word embedding
+            # so the average is over the rows
+            np_embedding = torch.zeros_like(word_embeds[0])
+            for i in range(len(top_half_word_embeddings)):
+                np_embedding += weights[i] * top_half_word_embeddings[i]
+            return np_embedding
+
         elif method == "average":
             np_embedding = torch.mean(word_embeds, 0)
             return np_embedding

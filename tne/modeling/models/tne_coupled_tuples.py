@@ -338,6 +338,12 @@ class TNECoupledTuplesModel(Model):
     # given the original spans, generates a list of spans including every consecutive
     # k-tuple of words in the array, along with the appropriate labels
     def k_tuple_spans(self, text_org, spans_org, link_labels_org, preposition_labels_org, k):
+        print("\n\n\n\n\n\n\n\n\n\n\n\n")
+        print("Text: ")
+        print(type(text_org))
+        print(len(text_org))
+        print(text_org)
+
         link_labels = link_labels_org[0]
         preposition_labels = preposition_labels_org[0]
         spans = spans_org[0]

@@ -337,10 +337,12 @@ class TNECoupledTuplesModel(Model):
 
     # given the original spans, generates a list of spans including every consecutive
     # k-tuple of words in the array, along with the appropriate labels
-    def k_tuple_spans(self, text, spans, link_labels, preposition_labels, k):
-        link_labels = link_labels[0]
-        preposition_labels = preposition_labels[0]
-        spans = spans[0]
+    def k_tuple_spans(self, text_org, spans_org, link_labels_org, preposition_labels_org, k):
+        link_labels = link_labels_org[0]
+        preposition_labels = preposition_labels_org[0]
+        spans = spans_org[0]
+        text = text_org['token_ids']
+
         new_spans = torch.zeros(len(text) - 1)
         new_labels = torch.zeros((len(text) - 1) ^ 2)
         new_preps = torch.zeros((len(text) - 1) ^ 2)

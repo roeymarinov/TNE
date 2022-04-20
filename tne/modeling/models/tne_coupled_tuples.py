@@ -341,7 +341,7 @@ class TNECoupledTuplesModel(Model):
         new_spans = torch.zeros(len(text) - 1)
         new_labels = torch.zeros((len(text) - 1) ^ 2)
         new_preps = torch.zeros((len(text) - 1) ^ 2)
-        span_starts = [span[0] for span in spans[0]]
+        span_starts = [span[0].item() for span in spans[0]]
         print("\n\n\n\n\n\n\n")
         print(spans.shape)
         print(spans)

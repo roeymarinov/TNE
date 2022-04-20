@@ -360,6 +360,7 @@ class TNECoupledTuplesModel(Model):
                 print(span_starts[i])
                 print(type(span_starts[i]))
                 print(new_labels[i])
+                print(new_labels[i])
                 print(type(new_labels[i]))
                 new_labels[span_starts[i] * len(new_spans) + span_starts[j]] = link_labels[i * len(spans) + j]
                 if i == j:

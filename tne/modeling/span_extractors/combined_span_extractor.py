@@ -50,7 +50,8 @@ class CombinedSpanExtractor(SpanExtractor):
         """
 
         endpoint_span_embeddings = self._endpoint_span_extractor(sequence_tensor, span_indices)
-        yake_span_embeddings = self._span_extractor(sequence_tensor, span_indices, metadata)
+        yake_span_embeddings = self._yake_span_extractor(sequence_tensor, span_indices, metadata)
+        yake_span_embeddings = torch.Tensor(yake_span_embeddings).cuda()
         span_embeddings = torch.cat((endpoint_span_embeddings, yake_span_embeddings), dim=2)
 
         return span_embeddings

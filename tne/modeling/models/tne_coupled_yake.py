@@ -134,7 +134,8 @@ class TNECoupledYakeModel(Model):
                 span_embeddings = self.get_span_embeddings(text, spans, metadata)
         else:
             span_embeddings = self.get_span_embeddings(text, spans, metadata)
-        span_embeddings = torch.Tensor(span_embeddings).cuda()
+        if not span_embeddings.is_cuda:
+            span_embeddings = torch.Tensor(span_embeddings).cuda()
 
         anchor_reps = self._anchor_feedforward(span_embeddings)
         complement_reps = self._complement_feedforward(span_embeddings)

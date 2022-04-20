@@ -347,7 +347,7 @@ class TNECoupledTuplesModel(Model):
         link_labels = link_labels_org[0]
         preposition_labels = preposition_labels_org[0]
         spans = spans_org[0]
-        text = text_org[0]
+        text = text_org['tokens']['token_ids'][0]
 
         new_spans = torch.zeros(len(text) - 1)
         new_labels = torch.zeros((len(text) - 1) ^ 2)

@@ -338,28 +338,28 @@ class TNECoupledTuplesModel(Model):
     # given the original spans, generates a list of spans including every consecutive
     # k-tuple of words in the array, along with the appropriate labels
     def k_tuple_spans(self, text, spans, link_labels, preposition_labels, k):
+        link_labels = link_labels[0]
+        preposition_labels = preposition_labels[0]
+        spans = spans[0]
         new_spans = torch.zeros(len(text) - 1)
         new_labels = torch.zeros((len(text) - 1) ^ 2)
         new_preps = torch.zeros((len(text) - 1) ^ 2)
-        span_starts = [span[0].item() for span in spans[0]]
+        span_starts = [span[0].item() for span in spans]
         print("\n\n\n\n\n\n\n\n\n\n\n\n")
         print("Link Labels: ")
         print(type(link_labels))
         print(link_labels.shape)
         print(link_labels)
-        print("Link Labels 0: ")
-        print(type(link_labels[0]))
-        print(len(link_labels[0]))
-        print(link_labels[0])
         print("\n\n\n\n\n\n\n\n\n\n\n\n")
         print("Preposition Labels: ")
         print(type(preposition_labels))
         print(preposition_labels.shape)
         print(preposition_labels)
-        print("Preposition Labels 0: ")
-        print(type(preposition_labels[0]))
-        print(len(preposition_labels[0]))
-        print(preposition_labels[0])
+        print("\n\n\n\n\n\n\n\n\n\n\n\n")
+        print("Text: ")
+        print(type(text))
+        print(len(text))
+        print(text)
         for i in range(len(text) - 1):
             if i <= len(text) - k - 1:
                 new_spans[i] = (i, i + k)  # fills with all k-tuples in the text

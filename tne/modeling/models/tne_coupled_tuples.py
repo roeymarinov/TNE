@@ -350,8 +350,8 @@ class TNECoupledTuplesModel(Model):
         text = text_org['tokens']['token_ids'][0]
 
         new_spans = torch.zeros(len(text) - 1, 2)
-        new_labels = torch.zeros((len(text) - 1) ^ 2)
-        new_preps = torch.zeros((len(text) - 1) ^ 2)
+        new_labels = torch.zeros((len(text) - 1) * (len(text) - 1))
+        new_preps = torch.zeros((len(text) - 1) * (len(text) - 1))
         span_starts = [span[0].item() for span in spans]
         print("\n\n\n\n\n\n\n\n\n\n\n\n")
         print("Link Labels: ")
@@ -378,7 +378,11 @@ class TNECoupledTuplesModel(Model):
 
         for i in range(len(spans)):  # fills the labels and prepositions
             for j in range(len(spans)):
-                # for each pair of spans puts the labels and preps in the new indices
+                # for each pair of spans puts the labels and preps in the new indices        print("\n\n\n\n\n\n\n\n\n\n\n\n")
+                print("new_labels: ")
+                print(type(new_labels))
+                print(len(new_labels))
+                print(new_labels)
                 new_labels[span_starts[i] * len(new_spans) + span_starts[j]] = link_labels[i * len(spans) + j]
                 if i == j:
                     new_labels[span_starts[i] * len(new_spans) + span_starts[j]] = -1

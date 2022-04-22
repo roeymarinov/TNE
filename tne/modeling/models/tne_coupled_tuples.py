@@ -142,12 +142,17 @@ class TNECoupledTuplesModel(Model):
         print("Span size check:")
         print(spans.shape)
         print(spans_tuples.shape)
-        print(len(text['tokens']['token_ids'][0]))
         print("\n\n\n\n")
         print("Text Structure Check:")
         print(text)
-        print(spans.shape)
-        print(len(text['tokens']['token_ids']))
+        print(len(text['tokens']['token_ids'][0]))
+        print(len(text['tokens']['mask'][0]))
+        print(len(text['tokens']['type_ids'][0]))
+        print(len(text['tokens']['wordpiece_mask'][0]))
+        print(len(text['tokens']['segment_concat_mask'][0]))
+        print(len(text['tokens']['offsets'][0][0]))
+
+
 
         if self._freeze:
             with torch.no_grad():

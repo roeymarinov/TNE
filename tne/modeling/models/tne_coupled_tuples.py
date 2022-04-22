@@ -142,6 +142,8 @@ class TNECoupledTuplesModel(Model):
         print("Span size check:")
         print(spans.shape)
         print(spans_tuples.shape)
+        print(spans)
+        print(spans_tuples)
         print("\n\n\n\n")
         print("Text Structure Check:")
         print(text)

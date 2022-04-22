@@ -359,7 +359,7 @@ class TNECoupledTuplesModel(Model):
         spans = spans_org[0]
         text = text_org['tokens']['token_ids'][0]
 
-        new_spans = torch.zeros(len(text) - 1, 2)
+        new_spans = torch.zeros(len(text), 2)
         for i in range(len(text)):
             if i <= len(text) - k - 1:
                 new_spans[i][0] = i  # fills with all k-tuples in the text

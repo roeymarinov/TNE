@@ -138,6 +138,7 @@ class TNECoupledTuplesModel(Model):
             A scalar loss to be optimised.
         """
         spans_tuples = self.k_tuple_spans(text, spans, self._num_words)
+        text['tokens']['mask'][0] = torch.full(len(spans_tuples[0]) * 5, True)
         print("\n\n\n\n")
         print("Span size check:")
         print(spans.shape)
@@ -152,7 +153,7 @@ class TNECoupledTuplesModel(Model):
         print(len(text['tokens']['type_ids'][0]))
         print(len(text['tokens']['wordpiece_mask'][0]))
         print(len(text['tokens']['segment_concat_mask'][0]))
-        print(len(text['tokens']['offsets'][0][0]))
+        print(len(text['tokens']['offsets'][0]))
 
 
 

@@ -138,11 +138,24 @@ class TNECoupledTuplesModel(Model):
             A scalar loss to be optimised.
         """
         spans_tuples = self.k_tuple_spans(text, spans, self._num_words)
+        text['tokens']['mask'][0] = torch.full(len(spans_tuples[0]) * 5, True)
         print("\n\n\n\n")
         print("Span size check:")
         print(spans.shape)
         print(spans_tuples.shape)
+        print(spans)
+        print(spans_tuples)
+        print("\n\n\n\n")
+        print("Text Structure Check:")
+        print(text)
         print(len(text['tokens']['token_ids'][0]))
+        print(len(text['tokens']['mask'][0]))
+        print(len(text['tokens']['type_ids'][0]))
+        print(len(text['tokens']['wordpiece_mask'][0]))
+        print(len(text['tokens']['segment_concat_mask'][0]))
+        print(len(text['tokens']['offsets'][0]))
+
+
 
         if self._freeze:
             with torch.no_grad():
@@ -354,14 +367,14 @@ class TNECoupledTuplesModel(Model):
         spans = spans_org[0]
         text = text_org['tokens']['token_ids'][0]
 
-        new_spans = torch.zeros(len(text) - 1, 2)
-        for i in range(len(text) - 1):
+        new_spans = torch.zeros(len(text), 2)
+        for i in range(len(text)):
             if i <= len(text) - k - 1:
                 new_spans[i][0] = i  # fills with all k-tuples in the text
                 new_spans[i][0] = i + k
             else:
                 new_spans[i][0] = i  # adds the rest as tuples
-                new_spans[i][0] = len(text) - 1
+                new_spans[i][0] = len(text)
 
         return torch.unsqueeze(new_spans, 0)
 

@@ -143,6 +143,11 @@ class TNECoupledTuplesModel(Model):
         print(spans.shape)
         print(spans_tuples.shape)
         print(len(text['tokens']['token_ids'][0]))
+        print("\n\n\n\n")
+        print("Text Structure Check:")
+        print(text)
+        print(spans.shape)
+        print(len(text['tokens']['token_ids']))
 
         if self._freeze:
             with torch.no_grad():

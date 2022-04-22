@@ -100,7 +100,7 @@ class YakeSpanExtractor(SpanExtractor):
 
         if method == "wa":
             # with softmax:
-            weights = torch.Tensor([scores_dict.get(word, 0.0) for word in np_tokens])
+            weights = torch.Tensor([-scores_dict.get(word, 0.0) for word in np_tokens])
             softmax = torch.nn.Softmax()
             weights = softmax(weights)
             # without softmax:
@@ -119,7 +119,7 @@ class YakeSpanExtractor(SpanExtractor):
 
         elif method == "wa_top_half":
             length = len(np_tokens)
-            np_scores = [(word, scores_dict.get(word, 0.0)) for word in np_tokens]
+            np_scores = [(word, -scores_dict.get(word, 0.0)) for word in np_tokens]
             top_half_scores = sorted(np_scores, key=lambda x: x[1])[:length // 2 + 1]
             top_half_words = [tup[0] for tup in top_half_scores]
             top_half_words_indices = [np_tokens.index(word) for word in top_half_words]
@@ -143,31 +143,31 @@ class YakeSpanExtractor(SpanExtractor):
                 np_embedding += weights[i] * top_half_word_embeddings[i]
             return np_embedding
 
-        elif method == "average":
-            np_embedding = torch.mean(word_embeds, 0)
-            return np_embedding
+        # elif method == "average":
+        #     np_embedding = torch.mean(word_embeds, 0)
+        #     return np_embedding
 
         elif method == "max":
-            np_scores = [(word, scores_dict.get(word, 0.0)) for word in np_tokens]
+            np_scores = [(word, -scores_dict.get(word, 0.0)) for word in np_tokens]
             top = sorted(np_scores, key=lambda x: x[1])[0]
             index = np_tokens.index(top[0])
             np_embedding = word_embeds[index]
             return np_embedding
 
-        elif method == "wa_first_last":
-            weights = torch.Tensor([scores_dict.get(np_tokens[0], 0.0), scores_dict.get(np_tokens[-1], 0.0)])
-            softmax = torch.nn.Softmax()
-            weights = softmax(weights)
-            # first_last_embeds = np.array([word_embeds[0], word_embeds[-1]])
-            # np_embedding = np.average(first_last_embeds, axis=0, weights=weights)
-            np_embedding = word_embeds[0] * weights[0] + word_embeds[-1] * weights[-1]
-            return np_embedding
+        # elif method == "wa_first_last":
+        #     weights = torch.Tensor([scores_dict.get(np_tokens[0], 0.0), scores_dict.get(np_tokens[-1], 0.0)])
+        #     softmax = torch.nn.Softmax()
+        #     weights = softmax(weights)
+        #     # first_last_embeds = np.array([word_embeds[0], word_embeds[-1]])
+        #     # np_embedding = np.average(first_last_embeds, axis=0, weights=weights)
+        #     np_embedding = word_embeds[0] * weights[0] + word_embeds[-1] * weights[-1]
+        #     return np_embedding
 
-        elif method == "average_first_last":
-            # first_last_embeds = np.array([word_embeds[0], word_embeds[-1]])
-            # np_embedding = np.average(first_last_embeds, axis=0)
-            np_embedding = word_embeds[0] * 0.5 + word_embeds[-1] * 0.5
-            return np_embedding
+        # elif method == "average_first_last":
+        #     # first_last_embeds = np.array([word_embeds[0], word_embeds[-1]])
+        #     # np_embedding = np.average(first_last_embeds, axis=0)
+        #     np_embedding = word_embeds[0] * 0.5 + word_embeds[-1] * 0.5
+        #     return np_embedding
 
         else:
             raise Exception("invalid method of np embedding creation")

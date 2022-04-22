@@ -112,7 +112,6 @@ class TNECoupledTuplesModel(Model):
             preposition_labels: torch.IntTensor = None,
     ) -> Dict[str, torch.Tensor]:
 
-
         """
         # Parameters
 
@@ -138,14 +137,18 @@ class TNECoupledTuplesModel(Model):
         loss : `torch.FloatTensor`, optional
             A scalar loss to be optimised.
         """
-        spans, link_labels, preposition_labels = self.k_tuple_spans(text, spans, link_labels,
-                                                                    preposition_labels, self._num_words)
+        spans_tuples = self.k_tuple_spans(text, spans, self._num_words)
+        print("\n\n\n\n")
+        print("Span size check:")
+        print(spans.shape)
+        print(spans_tuples.shape)
+        print(len(text['tokens']['token_ids'][0]))
 
         if self._freeze:
             with torch.no_grad():
-                span_embeddings = self.get_span_embeddings(text, spans)
+                span_embeddings = self.get_span_embeddings(text, spans_tuples)
         else:
-            span_embeddings = self.get_span_embeddings(text, spans)
+            span_embeddings = self.get_span_embeddings(text, spans_tuples)
 
         anchor_reps = self._anchor_feedforward(span_embeddings)
         complement_reps = self._complement_feedforward(span_embeddings)
@@ -158,7 +161,17 @@ class TNECoupledTuplesModel(Model):
                          complement_reps.squeeze(0).repeat(anchor_reps.shape[1], 1, 1)], -1) \
             .reshape(anchor_reps.shape[1] ** 2, anchor_reps.shape[-1] * 2)
 
-        preposition_scores = self._preposition_scorer(mat.unsqueeze(0)).squeeze(0)
+        preposition_scores_temp = self._preposition_scorer(mat.unsqueeze(0)).squeeze(0)
+
+        print("\n\n\n\n")
+        print("Scores shape check:")
+        print(preposition_scores_temp.shape)
+        print(type(preposition_scores_temp))
+
+        preposition_scores = self.k_tuple_scores(text, spans, preposition_scores_temp)
+
+        print(preposition_scores.shape)
+        print(type(preposition_scores))
 
         preposition_hat = torch.argmax(preposition_scores, dim=1).unsqueeze(0)
 
@@ -337,23 +350,33 @@ class TNECoupledTuplesModel(Model):
 
     # given the original spans, generates a list of spans including every consecutive
     # k-tuple of words in the array, along with the appropriate labels
-    def k_tuple_spans(self, text, spans, link_labels, preposition_labels, k):
-        new_spans = torch.zeros(len(text) - 1)
-        new_labels = torch.zeros((len(text) - 1) ^ 2)
-        new_preps = torch.zeros((len(text) - 1) ^ 2)
-        span_starts = [span[0] for span in spans]
+    def k_tuple_spans(self, text_org, spans_org, k):
+        spans = spans_org[0]
+        text = text_org['tokens']['token_ids'][0]
+
+        new_spans = torch.zeros(len(text) - 1, 2)
         for i in range(len(text) - 1):
             if i <= len(text) - k - 1:
-                new_spans[i] = (i, i + k)  # fills with all k-tuples in the text
+                new_spans[i][0] = i  # fills with all k-tuples in the text
+                new_spans[i][0] = i + k
             else:
-                new_spans[i] = (i, len(text) - 1)  # adds the rest as tuples
+                new_spans[i][0] = i  # adds the rest as tuples
+                new_spans[i][0] = len(text) - 1
 
-        for i in range(len(spans)):  # fills the labels and prepositions
+        return torch.unsqueeze(new_spans, 0)
+
+    # given the preposition scores from a k-tuple spans and the original spans
+    # and the scores to scores for the original span
+    def k_tuple_scores(self, text_org, spans_org, scores_org):
+        spans = spans_org[0]
+        scores = torch.FloatTensor(len(spans) * len(spans), 25)
+        span_starts = [span[0].item() for span in spans]
+        text = text_org['tokens']['token_ids'][0]
+
+        for i in range(len(spans)):
             for j in range(len(spans)):
-                # for each pair of spans puts the labels and preps in the new indices
-                new_labels[span_starts[i] * len(new_spans) + span_starts[j]] = link_labels[i * len(spans) + j]
-                if i == j:
-                    new_labels[span_starts[i] * len(new_spans) + span_starts[j]] = -1
-                new_preps[span_starts[i] * len(new_spans) + span_starts[j]] = preposition_labels[i * len(spans) + j]
+                scores[i * len(spans) + j] = scores_org[span_starts[i] * (len(text)-1) + span_starts[j]]
 
-        return new_spans, new_labels, new_preps
+        return scores
+
+

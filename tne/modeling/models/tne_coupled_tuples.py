@@ -248,6 +248,12 @@ class TNECoupledTuplesModel(Model):
         # Shape: (batch_size, document_length, encoding_dim)
         contextualized_embeddings = self._context_layer(text_embeddings, text_mask)
         # Shape: (batch_size, num_spans, 2 * encoding_dim)
+        print("\n\n\n\n")
+        print("contextualized_embeddings shape check:")
+        print(type(contextualized_embeddings))
+        print(contextualized_embeddings)
+        print(contextualized_embeddings.shape)
+
         span_embeddings = self._endpoint_span_extractor(contextualized_embeddings, spans)
 
         return span_embeddings

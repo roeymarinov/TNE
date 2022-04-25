@@ -15,6 +15,7 @@ from allennlp.training.metrics.fbeta_measure import FBetaMeasure
 from overrides import overrides
 
 from tne.modeling.metrics.mcf1_measure import MCF1Measure
+from tne.modeling.span_extractors.yake_span_extractor import YakeSpanExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +60,7 @@ class TNECoupledTuplesModel(Model):
             complement_feedforward: FeedForward,
             preposition_predictor: FeedForward,
             prepositions: List[str],
+            span_extractor: YakeSpanExtractor,
             lexical_dropout: float = 0.2,
             initializer: InitializerApplicator = InitializerApplicator(),
             freeze: bool = False,
@@ -79,13 +81,15 @@ class TNECoupledTuplesModel(Model):
 
         self._preposition_scorer = TimeDistributed(preposition_predictor)
 
-        self._endpoint_span_extractor = EndpointSpanExtractor(
-            context_layer.get_output_dim(),
-            combination="x,y",
-            num_width_embeddings=None,
-            span_width_embedding_dim=None,
-            bucket_widths=False,
-        )
+        self._yake_span_extractor = span_extractor
+
+        # self._endpoint_span_extractor = EndpointSpanExtractor(
+        #     context_layer.get_output_dim(),
+        #     combination="x,y",
+        #     num_width_embeddings=None,
+        #     span_width_embedding_dim=None,
+        #     bucket_widths=False,
+        # )
 
         if lexical_dropout > 0:
             self._lexical_dropout = torch.nn.Dropout(p=lexical_dropout)
@@ -165,9 +169,9 @@ class TNECoupledTuplesModel(Model):
 
         if self._freeze:
             with torch.no_grad():
-                span_embeddings = self.get_span_embeddings(text, spans_tuples)
+                span_embeddings = self.get_span_embeddings(text, spans_tuples, metadata)
         else:
-            span_embeddings = self.get_span_embeddings(text, spans_tuples)
+            span_embeddings = self.get_span_embeddings(text, spans_tuples, metadata)
 
         anchor_reps = self._anchor_feedforward(span_embeddings)
         complement_reps = self._complement_feedforward(span_embeddings)
@@ -244,7 +248,7 @@ class TNECoupledTuplesModel(Model):
             output_dict["tokens"] = [x["tokens"] for x in metadata]
         return output_dict
 
-    def get_span_embeddings(self, text, spans):
+    def get_span_embeddings(self, text, spans, metadata):
         # Shape: (batch_size, document_length, embedding_size)
         text_embeddings = self._lexical_dropout(self._text_field_embedder(text))
 
@@ -260,7 +264,7 @@ class TNECoupledTuplesModel(Model):
         print(contextualized_embeddings)
         print(contextualized_embeddings.shape)
 
-        span_embeddings = self._endpoint_span_extractor(contextualized_embeddings, spans)
+        span_embeddings = self._yake_span_extractor(contextualized_embeddings, spans, metadata)
 
         return span_embeddings
 
@@ -382,10 +386,10 @@ class TNECoupledTuplesModel(Model):
         new_spans = torch.zeros(len(text), 2)
         for i in range(len(text)):
             if i <= len(text) - k - 1:
-                new_spans[i][0] = i + 1  # fills with all k-tuples in the text
-                new_spans[i][0] = i + k + 1
+                new_spans[i][0] = i  # fills with all k-tuples in the text
+                new_spans[i][0] = i + k
             else:
-                new_spans[i][0] = i + 1  # adds the rest as tuples
+                new_spans[i][0] = i  # adds the rest as tuples
                 new_spans[i][0] = len(text)
 
         return torch.unsqueeze(new_spans, 0)

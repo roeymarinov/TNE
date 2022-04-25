@@ -383,16 +383,16 @@ class TNECoupledTuplesModel(Model):
     # k-tuple of words in the array, along with the appropriate labels
     def k_tuple_spans(self, text_org, spans_org, k):
         spans = spans_org[0]
-        text = text_org['tokens']['token_ids'][0]
+        text_length = len(text_org['tokens']['mask'][0])
 
-        new_spans = torch.zeros(len(text), 2)
-        for i in range(len(text)):
-            if i <= len(text) - k - 1:
+        new_spans = torch.zeros(text_length, 2)
+        for i in range(text_length):
+            if i <= text_length - k - 1:
                 new_spans[i][0] = i  # fills with all k-tuples in the text
                 new_spans[i][1] = i + k
             else:
                 new_spans[i][0] = i  # adds the rest as tuples
-                new_spans[i][1] = len(text)
+                new_spans[i][1] = text_length
 
         return torch.unsqueeze(new_spans, 0).to(torch.int32)
 

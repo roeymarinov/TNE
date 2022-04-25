@@ -171,9 +171,9 @@ class TNECoupledTuplesModel(Model):
 
         if self._freeze:
             with torch.no_grad():
-                span_embeddings = self.get_span_embeddings(text, spans_tuples, metadata)
+                span_embeddings = self.get_span_embeddings(text, spans_tuples, metadata).to(preposition_labels.device)
         else:
-            span_embeddings = self.get_span_embeddings(text, spans_tuples, metadata)
+            span_embeddings = self.get_span_embeddings(text, spans_tuples, metadata).to(preposition_labels.device)
 
         anchor_reps = self._anchor_feedforward(span_embeddings)
         complement_reps = self._complement_feedforward(span_embeddings)

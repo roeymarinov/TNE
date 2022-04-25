@@ -147,6 +147,8 @@ class TNECoupledTuplesModel(Model):
         print("Span size check:")
         print(spans.shape)
         print(spans_tuples.shape)
+        print(type(spans))
+        print(type(spans_tuples))
         print("spans")
         print(spans)
         print("spans_tuples")
@@ -392,7 +394,7 @@ class TNECoupledTuplesModel(Model):
                 new_spans[i][0] = i  # adds the rest as tuples
                 new_spans[i][1] = len(text)
 
-        return torch.unsqueeze(new_spans, 0)
+        return torch.unsqueeze(new_spans, 0).to(torch.int32)
 
     # given the preposition scores from a k-tuple spans and the original spans
     # and the scores to scores for the original span

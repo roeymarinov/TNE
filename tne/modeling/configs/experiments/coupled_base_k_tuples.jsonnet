@@ -12,6 +12,8 @@ local preposition_list = ['no-relation', 'of', 'against', 'in', 'by', 'on', 'abo
                           'to', 'from', 'for', 'among', 'under', 'at', 'between', 'during', 'near', 'over', 'before',
                           'inside', 'outside', 'into', 'around'];
 local num_labels = std.length(preposition_list);
+local method = "wa";
+local context = "doc";
 
 {
   "dataset_reader": {
@@ -89,6 +91,10 @@ local num_labels = std.length(preposition_list);
       ]
     },
     "prepositions": preposition_list,
+    "span_extractor": {
+        "method" : method,
+        "context" : context
+    },
     "freeze": false,
     "num_words": 3,
   },

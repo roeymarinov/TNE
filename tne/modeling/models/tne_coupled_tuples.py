@@ -141,7 +141,7 @@ class TNECoupledTuplesModel(Model):
         loss : `torch.FloatTensor`, optional
             A scalar loss to be optimised.
         """
-        spans_tuples = self.k_tuple_spans(text, spans, self._num_words)
+        spans_tuples = self.k_tuple_spans(text, spans, self._num_words).to(preposition_labels.device)
         # text['tokens']['mask'][0] = torch.full((len(spans_tuples[0]) * 5), 1)
         print("\n\n\n\n")
         print("Span size check:")
@@ -193,7 +193,7 @@ class TNECoupledTuplesModel(Model):
         print(preposition_scores_temp.shape)
         print(type(preposition_scores_temp))
 
-        preposition_scores = self.k_tuple_scores(text, spans, preposition_scores_temp)
+        preposition_scores = self.k_tuple_scores(text, spans, preposition_scores_temp).to(preposition_labels.device)
 
         print(preposition_scores.shape)
         print(type(preposition_scores))

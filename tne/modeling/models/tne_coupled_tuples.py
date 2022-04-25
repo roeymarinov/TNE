@@ -160,7 +160,7 @@ class TNECoupledTuplesModel(Model):
         print(len(text['tokens']['wordpiece_mask'][0]))
         print(len(text['tokens']['segment_concat_mask'][0]))
         print(len(text['tokens']['offsets'][0]))
-        print("\n\n\n\n")
+        print("\n\n\n\n\n")
         print("Context Layer Check:")
         print(self._context_layer)
         print(self._context_layer.get_output_dim())

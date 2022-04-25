@@ -143,7 +143,9 @@ class TNECoupledTuplesModel(Model):
         print("Span size check:")
         print(spans.shape)
         print(spans_tuples.shape)
+        print("spans")
         print(spans)
+        print("spans_tuples")
         print(spans_tuples)
         print("\n\n\n\n")
         print("Text Structure Check:")
@@ -154,6 +156,10 @@ class TNECoupledTuplesModel(Model):
         print(len(text['tokens']['wordpiece_mask'][0]))
         print(len(text['tokens']['segment_concat_mask'][0]))
         print(len(text['tokens']['offsets'][0]))
+        print("\n\n\n\n")
+        print("Context Layer Check:")
+        print(self._context_layer)
+        print(self._context_layer.get_output_dim())
 
 
 
@@ -376,10 +382,10 @@ class TNECoupledTuplesModel(Model):
         new_spans = torch.zeros(len(text), 2)
         for i in range(len(text)):
             if i <= len(text) - k - 1:
-                new_spans[i][0] = i  # fills with all k-tuples in the text
-                new_spans[i][0] = i + k
+                new_spans[i][0] = i + 1  # fills with all k-tuples in the text
+                new_spans[i][0] = i + k + 1
             else:
-                new_spans[i][0] = i  # adds the rest as tuples
+                new_spans[i][0] = i + 1  # adds the rest as tuples
                 new_spans[i][0] = len(text)
 
         return torch.unsqueeze(new_spans, 0)

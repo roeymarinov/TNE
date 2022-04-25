@@ -70,33 +70,8 @@ class YakeSpanExtractor(SpanExtractor):
                     last = span[1]
                     np_tokens = tokens[first:last + 1]
                     word_embeds = sequence_tensor[i][first:last + 1]
-                    if len(word_embeds) <= 0:
-                        print("\n\n\n\n\n")
-                        print("tokens:")
-                        print(tokens)
-                        print(len(tokens))
-                        print(type(tokens))
-                        print("\n\n\n\n\n")
-                        print("np_tokens:")
-                        print(np_tokens)
-                        print(len(np_tokens))
-                        print(type(np_tokens))
-                        print(i)
-                        print(j)
-                        print(first)
-                        print(last)
-                        print("\n\n\n\n\n")
-                        print("word_embeds:")
-                        print(word_embeds)
-                        print(len(word_embeds))
-                        print(type(word_embeds))
                     np_embedding = self.get_np_embedding(scores, np_tokens, word_embeds)
-                    # print("\n\n\n\n\n")
-                    # print("np_embedding:")
-                    # print(np_embedding)
-                    # print(len(np_embedding))
-                    # print(type(np_embedding))
-                    # span_embeddings[i][j] = np_embedding
+                    span_embeddings[i][j] = np_embedding
 
 
         elif context == "np":

@@ -154,20 +154,6 @@ class TNECoupledTuplesModel(Model):
         print("spans_tuples")
         print(spans_tuples)
         print("\n\n\n\n")
-        print("Text Structure Check:")
-        print(text)
-        print(len(text['tokens']['token_ids'][0]))
-        print(len(text['tokens']['mask'][0]))
-        print(len(text['tokens']['type_ids'][0]))
-        print(len(text['tokens']['wordpiece_mask'][0]))
-        print(len(text['tokens']['segment_concat_mask'][0]))
-        print(len(text['tokens']['offsets'][0]))
-        print("\n\n\n\n\n")
-        print("Context Layer Check:")
-        print(self._context_layer)
-        print(self._context_layer.get_output_dim())
-
-
 
         if self._freeze:
             with torch.no_grad():
@@ -177,6 +163,9 @@ class TNECoupledTuplesModel(Model):
 
         anchor_reps = self._anchor_feedforward(span_embeddings)
         complement_reps = self._complement_feedforward(span_embeddings)
+
+        print(anchor_reps.shape())
+        print(complement_reps.shape())
 
         # Creating a large matrix that concatenates all permutations of spans with one another, between the
         #  representation obtained from the anchor representations and the antecedent representations

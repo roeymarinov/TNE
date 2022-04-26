@@ -6,7 +6,7 @@ local max_length = 512;
 local max_span_width = 30;
 
 local transformer_dim = 768;  # uniquely determined by transformer_model
-local span_embedding_dim = 2 * transformer_dim;
+local span_embedding_dim = transformer_dim;
 local span_pair_embedding_dim = 3 * span_embedding_dim;
 local preposition_list = ['no-relation', 'of', 'against', 'in', 'by', 'on', 'about', 'with', 'after', 'member(s) of',
                           'to', 'from', 'for', 'among', 'under', 'at', 'between', 'during', 'near', 'over', 'before',

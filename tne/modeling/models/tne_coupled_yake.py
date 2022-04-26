@@ -138,20 +138,6 @@ class TNECoupledYakeModel(Model):
         if not span_embeddings.is_cuda:
             span_embeddings = torch.Tensor(span_embeddings).cuda()
 
-        print("\n\n\n\n")
-        print("span_embeddings")
-        print(span_embeddings)
-        print(type(span_embeddings))
-        print(len(span_embeddings))
-        print(span_embeddings.shape)
-        print("\n\n\n\n\n")
-        print("anchor_feedforward")
-        print(type(self._net_check))
-        print(self._net_check)
-        print(self._net_check.get_input_dim())
-        print(self._net_check.get_output_dim())
-        print(self._net_check.shape)
-        print([].shape)
         anchor_reps = self._anchor_feedforward(span_embeddings)
         complement_reps = self._complement_feedforward(span_embeddings)
 

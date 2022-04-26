@@ -152,10 +152,6 @@ class TNECoupledTuplesModel(Model):
         anchor_reps = self._anchor_feedforward(span_embeddings)
         complement_reps = self._complement_feedforward(span_embeddings)
 
-        print(type(anchor_reps))
-        print(type(complement_reps))
-        print(anchor_reps)
-        print(complement_reps)
 
         # Creating a large matrix that concatenates all permutations of spans with one another, between the
         #  representation obtained from the anchor representations and the antecedent representations
@@ -167,15 +163,9 @@ class TNECoupledTuplesModel(Model):
 
         preposition_scores_temp = self._preposition_scorer(mat.unsqueeze(0)).squeeze(0)
 
-        print("\n\n\n\n")
-        print("Scores shape check:")
-        print(preposition_scores_temp.shape)
-        print(type(preposition_scores_temp))
 
         preposition_scores = self.k_tuple_scores(text, spans, preposition_scores_temp).to(preposition_labels.device)
 
-        print(preposition_scores)
-        print(type(preposition_scores))
 
         preposition_hat = torch.argmax(preposition_scores, dim=1).unsqueeze(0)
 
@@ -239,11 +229,6 @@ class TNECoupledTuplesModel(Model):
         # Shape: (batch_size, document_length, encoding_dim)
         contextualized_embeddings = self._context_layer(text_embeddings, text_mask)
         # Shape: (batch_size, num_spans, 2 * encoding_dim)
-        print("\n\n\n\n\n")
-        print("contextualized_embeddings shape check:")
-        print(type(contextualized_embeddings))
-        print(contextualized_embeddings)
-        print(contextualized_embeddings.shape)
 
         span_embeddings = self._yake_span_extractor(contextualized_embeddings, spans, metadata)
 

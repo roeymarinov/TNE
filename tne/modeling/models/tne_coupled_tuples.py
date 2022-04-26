@@ -77,12 +77,7 @@ class TNECoupledTuplesModel(Model):
         self._text_field_embedder = text_field_embedder
         self._context_layer = context_layer
         self._anchor_feedforward = TimeDistributed(anchor_feedforward)
-        print("\n\n\n\n")
-        print("anchor_feedforward")
-        print(anchor_feedforward.get_input_dim())
-        print(anchor_feedforward.get_output_dim())
-        print(type(anchor_feedforward))
-        print(anchor_feedforward)
+        self._net_check = anchor_feedforward
         self._complement_feedforward = TimeDistributed(complement_feedforward)
 
         self._preposition_scorer = TimeDistributed(preposition_predictor)
@@ -172,6 +167,13 @@ class TNECoupledTuplesModel(Model):
         print(type(span_embeddings))
         print(len(span_embeddings))
         print(span_embeddings.shape)
+        print("\n\n\n\n")
+        print("anchor_feedforward")
+        print(type(self._net_check))
+        print(self._net_check)
+        print(self._net_check.get_input_dim())
+        print(self._net_check.get_output_dim())
+
         anchor_reps = self._anchor_feedforward(span_embeddings)
         complement_reps = self._complement_feedforward(span_embeddings)
 

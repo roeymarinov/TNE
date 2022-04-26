@@ -77,7 +77,6 @@ class TNECoupledTuplesModel(Model):
         self._text_field_embedder = text_field_embedder
         self._context_layer = context_layer
         self._anchor_feedforward = TimeDistributed(anchor_feedforward)
-        self._net_check = anchor_feedforward
         self._complement_feedforward = TimeDistributed(complement_feedforward)
 
         self._preposition_scorer = TimeDistributed(preposition_predictor)
@@ -143,17 +142,6 @@ class TNECoupledTuplesModel(Model):
             A scalar loss to be optimised.
         """
         spans_tuples = self.k_tuple_spans(text, spans, self._num_words).to(preposition_labels.device)
-        # text['tokens']['mask'][0] = torch.full((len(spans_tuples[0]) * 5), 1)
-        print("\n\n\n\n")
-        print("Span size check:")
-        print(spans.shape)
-        print(spans_tuples.shape)
-        print(type(spans))
-        print(type(spans_tuples))
-        print("spans")
-        print(spans)
-        print("spans_tuples")
-        print(spans_tuples)
 
         if self._freeze:
             with torch.no_grad():
@@ -161,24 +149,13 @@ class TNECoupledTuplesModel(Model):
         else:
             span_embeddings = self.get_span_embeddings(text, spans_tuples, metadata).to(preposition_labels.device)
 
-        print("\n\n\n\n")
-        print("span_embeddings")
-        print(span_embeddings)
-        print(type(span_embeddings))
-        print(len(span_embeddings))
-        print(span_embeddings.shape)
-        print("\n\n\n\n\n")
-        print("anchor_feedforward")
-        print(type(self._net_check))
-        print(self._net_check)
-        print(self._net_check.get_input_dim())
-        print(self._net_check.get_output_dim())
-
         anchor_reps = self._anchor_feedforward(span_embeddings)
         complement_reps = self._complement_feedforward(span_embeddings)
 
-        print(anchor_reps.shape())
-        print(complement_reps.shape())
+        print(type(anchor_reps))
+        print(type(complement_reps))
+        print(anchor_reps)
+        print(complement_reps)
 
         # Creating a large matrix that concatenates all permutations of spans with one another, between the
         #  representation obtained from the anchor representations and the antecedent representations
@@ -197,7 +174,7 @@ class TNECoupledTuplesModel(Model):
 
         preposition_scores = self.k_tuple_scores(text, spans, preposition_scores_temp).to(preposition_labels.device)
 
-        print(preposition_scores.shape)
+        print(preposition_scores)
         print(type(preposition_scores))
 
         preposition_hat = torch.argmax(preposition_scores, dim=1).unsqueeze(0)

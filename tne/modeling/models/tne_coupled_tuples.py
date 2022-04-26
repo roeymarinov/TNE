@@ -77,6 +77,12 @@ class TNECoupledTuplesModel(Model):
         self._text_field_embedder = text_field_embedder
         self._context_layer = context_layer
         self._anchor_feedforward = TimeDistributed(anchor_feedforward)
+        print("\n\n\n\n")
+        print("anchor_feedforward")
+        print(anchor_feedforward.get_input_dim())
+        print(anchor_feedforward.get_output_dim())
+        print(type(anchor_feedforward))
+        print(anchor_feedforward)
         self._complement_feedforward = TimeDistributed(complement_feedforward)
 
         self._preposition_scorer = TimeDistributed(preposition_predictor)
@@ -153,7 +159,6 @@ class TNECoupledTuplesModel(Model):
         print(spans)
         print("spans_tuples")
         print(spans_tuples)
-        print("\n\n\n\n")
 
         if self._freeze:
             with torch.no_grad():
@@ -161,6 +166,12 @@ class TNECoupledTuplesModel(Model):
         else:
             span_embeddings = self.get_span_embeddings(text, spans_tuples, metadata).to(preposition_labels.device)
 
+        print("\n\n\n\n")
+        print("span_embeddings")
+        print(span_embeddings)
+        print(type(span_embeddings))
+        print(len(span_embeddings))
+        print(span_embeddings.shape)
         anchor_reps = self._anchor_feedforward(span_embeddings)
         complement_reps = self._complement_feedforward(span_embeddings)
 

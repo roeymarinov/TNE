@@ -88,7 +88,7 @@ class YakeSpanExtractor(SpanExtractor):
                     scores = yake_kw_extractor.extract_keywords(noun_phrase)
                     word_embeds = sequence_tensor[i][first:last + 1]
                     np_embedding = self.get_np_embedding(scores, np_tokens, word_embeds)
-                    span_embeddings[i][j] = np_embedding # here was the problem!
+                    span_embeddings[i][j] = np_embedding
         else:
             raise Exception("invalid context of yake representation")
 

@@ -4,7 +4,7 @@ from allennlp.data import DatasetReader, Instance
 from allennlp.models import Model
 from allennlp.predictors.predictor import Predictor
 from overrides import overrides
-
+import os
 
 @Predictor.register("tne_predictor")
 class TNEPredictor(Predictor):
@@ -17,7 +17,7 @@ class TNEPredictor(Predictor):
     def __init__(
         self, model: Model, dataset_reader: DatasetReader, language: str = "en_core_web_sm"
     ) -> None:
-        super().__init__(model, dataset_reader)
+        super().__init__(model.cuda(), dataset_reader)
 
         # We have to use spacy to tokenize our document here, because we need
         # to also know sentence boundaries to propose valid mentions.
@@ -43,6 +43,6 @@ class TNEPredictor(Predictor):
         instance = self._dataset_reader.text_to_instance(document, tokens, entities)
         return instance
 
-    # @overrides
-    # def dump_line(self, outputs: JsonDict) -> str:
-    #     return 'my output\n'
+    #@overrides
+    #def dump_line(self, outputs: JsonDict) -> str:
+       # return str({"predicted_prepositions": outputs["predicted_prepositions"]})+os.linesep

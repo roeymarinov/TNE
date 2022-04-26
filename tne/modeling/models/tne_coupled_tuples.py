@@ -167,7 +167,7 @@ class TNECoupledTuplesModel(Model):
         print(type(span_embeddings))
         print(len(span_embeddings))
         print(span_embeddings.shape)
-        print("\n\n\n\n")
+        print("\n\n\n\n\n")
         print("anchor_feedforward")
         print(type(self._net_check))
         print(self._net_check)

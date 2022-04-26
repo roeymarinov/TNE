@@ -381,7 +381,7 @@ class TNECoupledTuplesModel(Model):
         spans = spans_org[0]
         scores = torch.FloatTensor(len(spans) * len(spans), 25)
         span_starts = [span[0].item() for span in spans]
-        text = text_org['tokens']['token_ids'][0]
+        text = text_org['tokens']['mask'][0]
 
         for i in range(len(spans)):
             for j in range(len(spans)):

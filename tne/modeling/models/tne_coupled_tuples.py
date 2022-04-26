@@ -153,7 +153,7 @@ class TNECoupledTuplesModel(Model):
         print(spans)
         print("spans_tuples")
         print(spans_tuples)
-        print("\n\n\n\n")
+        print("\n\n\n\n\n")
 
         if self._freeze:
             with torch.no_grad():

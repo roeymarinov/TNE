@@ -4,6 +4,6 @@ allennlp==2.6.0
 allennlp-models
 wandb
 Flask
-tqdm==4.62.3
-numpy==1.21.6
-yake==0.4.8
+tqdm~=4.62.3
+numpy~=1.22.2
+yake~=0.4.8

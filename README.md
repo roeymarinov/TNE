@@ -20,7 +20,7 @@ allennlp train tne/modeling/configs/experiments/first_set/<name_of_experiment>.j
          -s models/<name_of_experiment>
 ```
 
-To train our models on the first set of experiments, run tha same command but with "second_set" instead of "first_set"
+To train our models on the second set of experiments, run the same command but with "second_set" instead of "first_set"
 
 To train our model experiment with np recognition, run:
 
